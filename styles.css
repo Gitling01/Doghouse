@@ -1,0 +1,75 @@
+/*LISTING SECTION*/
+.title{
+    display: flex;
+    margin: 10px auto;
+    align-items: center; /*"inside" items with respect to each other*/
+    justify-content: center; /*entire inside with respect to container*/
+}
+.borough-links{
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    padding-left: 10px;
+}
+.row{
+    display: flex;
+    align-items: center;
+}
+.single-column{
+    display: flex;
+    flex-direction: column;
+}
+#listing-container-description{
+    text-align: center;
+}
+.main-listing-container{
+    display: flex;
+    flex-direction: column;
+}
+.listing-row-container{
+    width: 70%;
+    margin: 50px auto; /*equidistant from left and right-- centered*/
+    display: flex;
+    justify-content: space-around;
+}
+.listing{
+    border: 1px solid black;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.listing-text{
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.listing-text h5{
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.listing-text h3{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.icon{
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+}
+.property-image{
+    height: 200px;
+    width: 200px;
+}
+.pagination{
+    justify-items: end;
+}
+.pagination a{
+    border: 1px solid black;
+    color: black;
+    text-decoration: none;
+    padding: 5px;
+}
+.pagination a.active{
+    background-color: yellow;
+}
+
+/*RESOURCES SECTION*/
