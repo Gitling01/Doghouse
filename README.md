@@ -14,7 +14,7 @@ You will need a code editor such as VSCode. In VSCode, you will need to install 
 Node.js download: https://nodejs.org/en/download/package-manager
 
 From the VSCode terminal, type 'node -v' to check the version and verify it is correctly installed.
-Then type 'npm install Express'.
+Then type 'npm install express'.
 
 
 
