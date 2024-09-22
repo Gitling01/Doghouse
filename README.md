@@ -1,5 +1,5 @@
 ## About
-This project aims to make it easier to find dog-friendly housing options in New York City, with the hope of reducing the number of dogs going into shelters each year. 
+This website project aims to make it easier to find dog-friendly housing options in New York City, with the hope of reducing the number of dogs going into shelters each year. 
 One project goal is to provide educational resources and links to relevant helpful organizations, to aid both renters and property owners. Another goal is to have a variety of exclusively dog-friendly options in one single website, reducing the time and effort required to search for a new place. 
 
 ## Tools
