@@ -4,9 +4,14 @@ document.addEventListener('DOMContentLoaded', function(){
 
 function getListingData(){
     fetch('http://localhost:3000/data')
-    .then(response => response.text())
-    .then(data => console.log(data))    
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(listing => {
+            console.log(`Address: ${listing.street_address}, Price: ${listing.price}`);
+        }); 
+    })   
     .catch(error => console.error(error)); 
 }
 
-TODO: Update getListingData to show actual listing data
+//TODO: Update getListingData to get the rest of the properties 
+//and to change document elements to those values
