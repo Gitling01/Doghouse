@@ -1,3 +1,6 @@
+body {
+    cursor: url('images/icons8-cat-footprint-24.png'), auto;
+}
 /*LISTING SECTION*/
 .title{
     display: flex;
@@ -33,7 +36,8 @@
     justify-content: space-around;
 }
 .listing{
-    border: 1px solid black;
+    border: 1px solid rgb(156, 147, 147);
+    border-radius: 2%;
     padding-left: 10px;
     padding-right: 10px;
 }
@@ -56,6 +60,7 @@
     margin-right: 10px;
 }
 .property-image{
+    border-radius: 2%;
     height: 200px;
     width: 200px;
 }
