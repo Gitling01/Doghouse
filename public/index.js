@@ -28,3 +28,4 @@ function getListingData(){
 }
 
 //TODO: Fix images
+//TODO: Edit Fetch call to match best practices
