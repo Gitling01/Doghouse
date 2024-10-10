@@ -2,31 +2,47 @@ body {
     cursor: url('images/icons8-cat-footprint-24.png'), auto;
 }
 /*LISTING SECTION*/
+.nav-bar{
+    display: flex;
+    padding: 8px 16px;
+}
+.nav-bar ul{
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.nav-bar a{
+    display: block;
+    color: black;
+    padding: 8px;
+    float: left;
+    text-decoration: none;
+}
 .main-title{
     display: flex;
-    margin: 10px auto;
+    margin: 0 auto;
     align-items: center; /*"inside" items with respect to each other*/
     justify-content: center; /*entire inside with respect to container*/
 }
 .search-object{
     display: flex;
     align-items: center;
-    
 }
 .search-bar{
-    margin-top: 10px;
+    margin-top: 8px;
     margin-left: auto;
     justify-content: center;
     width: 180px;
-    height: 20px;
+    height: 16px;
 }
 .search-button{
     border: 1px solid black;
-    margin-top: 10px;
+    margin-top: 8px;
     margin-right: auto;
     justify-content: center;
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
 }
 .borough-links{
     display: flex;
@@ -43,8 +59,8 @@ body {
     flex-direction: column;
 }
 #listing-container-description{
-    margin-top: 70px;
     text-align: center;
+    
 }
 .main-listing-container{
     display: flex;
@@ -52,7 +68,7 @@ body {
 }
 .listing-row-container{
     width: 70%;
-    margin: 50px auto; /*equidistant from left and right-- centered*/
+    margin: 24px auto; /*equidistant from left and right-- centered*/
     display: flex;
     justify-content: space-around;
 }
@@ -67,7 +83,7 @@ body {
     margin-top: 10px;
     margin-bottom: 10px;
 }
-.listing-text h5{
+.listing-text p{
     margin-top: 0;
     margin-bottom: 0;
 }
@@ -76,8 +92,8 @@ body {
     margin-bottom: 5px;
 }
 .icon{
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
     margin-right: 10px;
 }
 .property-image{
@@ -110,4 +126,37 @@ body {
     padding-bottom: 50px;
     align-items: center; /*"inside" items with respect to each other*/
     justify-content: center; /*entire inside with respect to container*/
+}
+/*LOGIN PAGE*/
+.centered-text{
+    text-align: center;
+    margin: 0px auto;
+}
+#login-heading{
+    margin-top: 50px;
+    margin-bottom: 30px;
+}
+#login-form{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgb(96, 162, 255);
+    border-radius: 2px;
+    padding: 100px;
+    margin: 10px auto;
+    width: 25%;
+    height: 100px;
+    background-color: rgb(96, 162, 255);
+}
+.single-item-container{
+    display: flex;
+    margin: 25px auto;
+}
+#submit-button{
+    margin-top: 0px;
+    padding: 8px 20px;
+    width: 80px;
+    background-color: white;
+    border: 1px solid rgb(153, 162, 174);
+    border-radius: 2px;
+    cursor: pointer;
 }
