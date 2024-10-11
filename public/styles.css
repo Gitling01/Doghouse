@@ -1,7 +1,7 @@
 body {
     cursor: url('images/icons8-cat-footprint-24.png'), auto;
 }
-/*LISTING SECTION*/
+/**** LISTING SECTION ****/
 .nav-bar{
     display: flex;
     padding: 8px 16px;
@@ -118,7 +118,7 @@ body {
     background-color: yellow;
 }
 
-/*RESOURCES SECTION*/
+/**** RESOURCES SECTION ****/
 .title{
     display: flex;
     margin: 10px auto;
@@ -127,7 +127,8 @@ body {
     align-items: center; /*"inside" items with respect to each other*/
     justify-content: center; /*entire inside with respect to container*/
 }
-/*LOGIN PAGE*/
+
+/**** LOGIN PAGE ****/
 .centered-text{
     text-align: center;
     margin: 0px auto;
@@ -140,7 +141,7 @@ body {
     display: flex;
     flex-direction: column;
     border: 1px solid rgb(96, 162, 255);
-    border-radius: 2px;
+    border-radius: 2%;
     padding: 100px;
     margin: 10px auto;
     width: 25%;
@@ -159,4 +160,39 @@ body {
     border: 1px solid rgb(153, 162, 174);
     border-radius: 2px;
     cursor: pointer;
+}
+
+/**** LISTING FORM PAGE ****/
+.add-a-listing-page-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#add-a-listing-title{
+    text-align: center;
+}
+.listing-form-container{
+    display: flex;
+    background-color: rgb(96, 162, 255);
+    border-radius: 2%;
+    padding: 16px;
+    margin: 32px auto;
+    justify-content: center;
+    align-items: center;
+}
+.form-group{
+    display: flex;
+    margin: 16px auto;
+    justify-content: right;
+    align-items: center;
+    width: 400px;
+}
+.input-field{
+    margin-left: 8px;
+    width: 200px;
+}
+#submit-listing-button{
+    width: 400px;
+    padding: 8px;
+    margin: 16px auto;
 }
