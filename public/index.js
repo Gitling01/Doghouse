@@ -1,9 +1,10 @@
 document.addEventListener('DOMContentLoaded', function(){
     getListingData();
+    registerUser();
 })
 
-function getListingData(){
-    fetch('http://localhost:3000/data')
+async function getListingData(){
+    await fetch('http://localhost:3000/data')
     .then(response => response.json())
     .then(data => {
         data.forEach((item, index) => { 
@@ -27,5 +28,17 @@ function getListingData(){
     .catch(error => console.error(error)); 
 }
 
+async function registerUser(){
+    const username = document.getElementById("username");
+    const password = document.getElementById("password");
+    await fetch("http://localhost:3000/users", {
+        method: "POST", body: {"username": username, "password": password}
+    })
+    .catch(error => console.error("Registration was unsuccessful", error))
+}
+
+function registerLoginToggle(){
+    
+}
+
 //TODO: Fix images
-//TODO: Edit Fetch call to match best practices

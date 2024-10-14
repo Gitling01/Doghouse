@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" type="text/css" href="styles.css"/>
+    <script type="text/javascript" src="index.js"></script>
 </head>
 
 <body>
@@ -17,11 +18,11 @@
             <label for="password">Password:</label><br>
             <input type="text" id="password"><br>
             <div class="single-item-container">
-                <button id="submit-button" onclick="">Login</button>
+                <button id="submit-button" onclick="registerUser()">Login</button>
             </div>
         </form>
         <div class="single-item-container">
-            <a href="/register" class="centered-text">Register</a>
+            <p class="centered-text" id="register-or-login-link" onclick="registerLoginToggle()">Blank</p>
         </div>
     </div>  
 </body>
