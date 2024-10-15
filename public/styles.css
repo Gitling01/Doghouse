@@ -133,6 +133,20 @@ body {
     text-align: center;
     margin: 0px auto;
 }
+.single-item-container{
+    display: flex;
+    margin: 25px auto;
+}
+#submit-button{
+    margin-top: 0px;
+    padding: 8px 20px;
+    width: 80px;
+    background-color: white;
+    border: 1px solid rgb(153, 162, 174);
+    border-radius: 2px;
+    cursor: pointer;
+}
+/** login form **/
 #login-heading{
     margin-top: 50px;
     margin-bottom: 30px;
@@ -148,17 +162,38 @@ body {
     height: 100px;
     background-color: rgb(96, 162, 255);
 }
-.single-item-container{
-    display: flex;
-    margin: 25px auto;
+/**register form**/
+#register-heading{
+    margin-top: 50px;
+    margin-bottom: 30px;
 }
-#submit-button{
-    margin-top: 0px;
-    padding: 8px 20px;
-    width: 80px;
-    background-color: white;
-    border: 1px solid rgb(153, 162, 174);
-    border-radius: 2px;
+#register-form{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgb(96, 162, 255);
+    border-radius: 2%;
+    padding: 100px;
+    margin: 10px auto;
+    width: 25%;
+    height: 100px;
+    background-color: rgb(96, 162, 255);
+}
+
+/**switching**/
+#register-body{
+    display: none;
+}
+#login-body{
+    display: block;
+}
+#register-link{
+    color:blue;
+    text-decoration-line: underline;
+    cursor: pointer;
+}
+#login-link{
+    color:blue;
+    text-decoration-line: underline;
     cursor: pointer;
 }
 
@@ -196,3 +231,4 @@ body {
     padding: 8px;
     margin: 16px auto;
 }
+
