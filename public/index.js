@@ -1,6 +1,15 @@
 document.addEventListener('DOMContentLoaded', function(){
     getListingData();
-    registerUser();
+    
+    //login-register forms
+    const loginBody = document.getElementById('login-body');
+    const registerBody = document.getElementById('register-body');
+    const registerLink = document.getElementById('register-link');
+    const loginLink = document.getElementById('login-link');
+    registerLink.addEventListener('click', function() {
+        toggleForm(loginBody,registerBody)});
+    loginLink.addEventListener('click', function() {
+        toggleForm(loginBody,registerBody);});
 })
 
 async function getListingData(){
@@ -37,8 +46,14 @@ async function registerUser(){
     .catch(error => console.error("Registration was unsuccessful", error))
 }
 
-function registerLoginToggle(){
-    
+function toggleForm(loginBody, registerBody){
+    if(registerBody.style.display === 'none'){
+        registerBody.style.display = 'block';
+        loginBody.style.display = 'none';
+    } else {
+        registerBody.style.display = 'none';
+        loginBody.style.display = 'block';
+    }
 }
 
 //TODO: Fix images
