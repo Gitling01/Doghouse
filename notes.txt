@@ -1,0 +1,8 @@
+10/22/2024:
+1- The registration is fully working (can register a user via the site into db)
+2- The ability to add listings is fully working (can add a listing via the
+site into the database)
+3- WIP: The login is being worked on (the main server side logic is fully working -- to print "logged in" 
+   to the console)(the client side route still needs to be added but login works via Insomnia)
+   I still want to check that I am handling errors for all needed cases.
+4- WIP: Stuff related to sessions is currently being added (session.js and server.js are being modified)
