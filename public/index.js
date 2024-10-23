@@ -14,15 +14,29 @@ document.addEventListener('DOMContentLoaded', function(){
         loginLink.addEventListener('click', function() {
         toggleForm(loginBody, registerBody);});
     }
+
+//login-register submit button
+    const registerForm = document.getElementById("register-form");
+    if(registerForm){
+        registerForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(registerForm);
+        const data = Object.fromEntries(formData);
+        console.log(data);
+        registerUser(data);
+    })
+    }
     
-     //listing-form
+//listing-form
     const listingForm = document.getElementById('listing-form');
-    listingForm.addEventListener('submit', event => {
+    if(listingForm){
+        listingForm.addEventListener('submit', event => {
         event.preventDefault();
         createListing();
         listingForm.reset();
-    });
-   
+        });
+    }
+    
 })
 
 //TODO: can modify it to get city and zipcode too  
@@ -84,14 +98,26 @@ async function createListing(){
     .catch(error => console.error("Error creating listing in createListing function", error))
 }
 
-//TODO: headers, stringify, more logging
-async function registerUser(){
-    const username = document.getElementById("username");
-    const password = document.getElementById("password");
+//TODO: Check ret
+async function registerUser(data){
+    const { email, username, password } = data;
     await fetch("http://localhost:3000/users", {
-        method: "POST", body: {"username": username, "password": password}
+        method: "POST", 
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({"email": email, "username": username, "password": password})
     })
-    .catch(error => console.error("Registration was unsuccessful", error))
+    .then(response => {
+        if(!response.ok){
+            throw new Error("Bad response " + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Successfully posted", data);
+    })
+    .catch(error => console.error("From registerUser(): Registration was unsuccessful", error))
 }
 
 function toggleForm(loginBody, registerBody){
