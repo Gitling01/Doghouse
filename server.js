@@ -4,8 +4,10 @@ const app = express();
 const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const sessionMiddleware = require('./session.js'); 
 app.use(express.json());
 app.use(cors());
+app.use(sessionMiddleware);
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
 const port = process.env.PORT || 3000;
@@ -76,6 +78,7 @@ app.post('/users', async(req,res) => { //TODO: REVIEW
     if(!db){
         return res.status(500).json({ error: 'Database connection not made.' });  
       }
+      console.log("Request body received: ", req.body);
     try{
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(req.body.password,salt);
@@ -83,15 +86,38 @@ app.post('/users', async(req,res) => { //TODO: REVIEW
         const email = req.body.email;
         const query = "INSERT INTO DoghouseDB.user (username, user_password, email) VALUES (?,?,?)";
         await db.execute(query,[username,hashedPassword,email]);     
-        res.status(201).send();     
+        res.status(201).json({ message: "User added successfully!"});     
     } catch(error){
         console.error("Error adding user", error);
         res.status(500).send();
     }
 });
 
-app.post('/users/login',(res,req) => {
-    //TODO: add route to let users login
+//TODO: add error checking as needed
+app.post('/users/login', async (req,res) => {
+    if(!db){
+        return res.status(500).json({ error: 'Database connection not made.' });  
+    }
+    try{
+        const request_username = req.body.username;
+        const request_password = req.body.password;
+        const query = "SELECT user_password FROM DoghouseDB.user WHERE username = ?";
+        const [result] = await db.execute(query,[request_username]);
+        console.log(result);
+        const match = await bcrypt.compare(request_password,result[0].user_password);
+        if(match){
+            //the user is logged in
+            console.log("Logged in!");
+            res.status(201).json({ message: "Logged in successfully!"});
+        } else {
+            //deny login
+            console.log("Not logged in!");
+            res.status(500).json({ message: "Did not log in successfully!"});
+        }
+    }  catch(error){
+        console.error("Error logging in", error);
+        res.status(500).send();
+    }
 });
 
 app.listen(port, () => {
