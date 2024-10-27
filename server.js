@@ -1,14 +1,24 @@
 const connection = require('./db.js');
 const express = require('express');
+const session = require('express-session');
 const app = express();
 const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const sessionMiddleware = require('./session.js'); 
 app.use(express.json());
 app.use(cors());
-app.use(sessionMiddleware);
+app.set('trust proxy', 1); //will deploy to heroku soon
 app.use('/static', express.static(path.join(__dirname, 'public')));
+app.use(session({
+    name:'session-name',
+    secret: 'kimpossible',
+    resave: false,
+    saveUninitialized: false,
+    cookie:{
+        secure: false, //set true in production
+        maxAge: 1000 * 60 * 5 //5 min
+    }
+}));
 
 const port = process.env.PORT || 3000;
 
@@ -60,6 +70,25 @@ app.post('/listings', async (req,res) => {
     }
 });
 
+//SESSIONS RELATED
+const isAuthenticated = (req,res,next) => {
+    console.log(`isAuthenticated: ${req.session.id}`);
+    console.log(req.session);
+    if(req.session.userId){ //req.session profile or req.session.userId preferred?
+        console.log("User is logged in");
+        return next(); //return
+    } else {
+        console.log("Unauthorized");
+        res.status(401).json({message: "Not authorized to view this page - login"});
+    }
+};
+
+//Protected Route for Add a Listing Link
+app.get('/protected/add-listing', isAuthenticated, (req,res) => {
+    console.log("isAuthenticated finished and I was called to send a file");
+    res.status(200).json({message: "from /protected/add-listing: user passed isAuthenticated"});
+});
+
 //LOGIN RELATED ROUTES
 app.get('/users', async (req,res) => { //TODO: REVIEW
     if(!db){
@@ -107,7 +136,8 @@ app.post('/users/login', async (req,res) => {
         const match = await bcrypt.compare(request_password,result[0].user_password);
         if(match){
             //the user is logged in
-            console.log("Logged in!");
+            req.session.userId = request_username;
+            console.log(`Logged in!: ${request_username}`);
             res.status(201).json({ message: "Logged in successfully!"});
         } else {
             //deny login
@@ -118,6 +148,18 @@ app.post('/users/login', async (req,res) => {
         console.error("Error logging in", error);
         res.status(500).send();
     }
+});
+
+//logout
+app.post('/logout',(req,res) => {
+    req.session.destroy((err) => {
+        if(err){
+            console.log("logout error", err);
+            res.status(500).json( {message: "error logging out"} );
+        }
+        res.clearCookie('connect.sid');
+        res.status(200).json( {message: "logout successful"} );
+    });
 });
 
 app.listen(port, () => {
