@@ -26,7 +26,18 @@ document.addEventListener('DOMContentLoaded', function(){
         registerUser(data);
     })
     }
-    
+
+    const loginForm = document.getElementById("login-form");
+    if(loginForm){
+        loginForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(loginForm);
+        const data = Object.fromEntries(formData);
+        console.log(data);
+        loginUser(data);
+        })
+    }
+
 //listing-form
     const listingForm = document.getElementById('listing-form');
     if(listingForm){
@@ -35,9 +46,12 @@ document.addEventListener('DOMContentLoaded', function(){
         createListing();
         listingForm.reset();
         });
-    }
-    
+    } 
+
 })
+
+////end of event listener////
+
 
 //TODO: can modify it to get city and zipcode too  
 async function getListingData(){
@@ -53,9 +67,9 @@ async function getListingData(){
            // const photoUrlElements = document.getElementsByClassName('property-image');
             if(index < streetAddressElements.length){
                 streetAddressElements[index].textContent = item.street_address;
-                priceElements[index].textContent = "Price: " + "$" + item.price;
-                numBedroomsElements[index].textContent = "Bedrooms: " + item.bedroom_quantity;
-                numBathroomsElements[index].textContent = "Bathrooms: " + item.bathroom_quantity;
+                priceElements[index].textContent = "$" + item.price;
+                numBedroomsElements[index].textContent = "Beds: " + item.bedroom_quantity;
+                numBathroomsElements[index].textContent = "Baths: " + item.bathroom_quantity;
                 sizeElements[index].textContent = "Sq ft: " + item.size;
                 //photoUrlElements[index].src = item.photo_url;
                // console.log("item.photo_url");
@@ -118,6 +132,29 @@ async function registerUser(data){
         console.log("Successfully posted", data);
     })
     .catch(error => console.error("From registerUser(): Registration was unsuccessful", error))
+}
+
+//login user function
+async function loginUser(data){
+    const { username, password } = data;
+    await fetch('http://localhost:3000/users/login', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({"username": username, "password": password})
+    })
+    .then(response => {
+        if(!response.ok){
+            throw new Error("Bad response" + response.statusText);
+        }
+        window.location.href = '/public/index.html';
+        return response.json();
+    })
+    .then(data => {
+        console.log("From loginUser(): successfully logged in", data);
+    })
+    .catch(error => console.error("From loginUser(): login was unsuccessful", error))
 }
 
 function toggleForm(loginBody, registerBody){
