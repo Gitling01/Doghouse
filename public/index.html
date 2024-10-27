@@ -17,7 +17,7 @@
         <div class="nav-bar">
             <ul>
                 <li><a href="login.html">Sign Up/Login</a></li>
-                <li><a href="listing-form.html">Add a Listing</a></li>
+                <li><button id="add-listing-button">Add a Listing</button></li>
                 <li><a href="#resources-title">Resources</a></li>
                 <li><a href="">About Us</a></li>
                 <li><a href="">Account</a></li>
@@ -95,10 +95,15 @@
                         <div class="listing-text">
                             <img class="property-image" src="images/propertyphoto2.jpeg" alt="">
                             <h3 class="street-address"></h3>
-                            <p class="price"></p>
-                            <p class="bedroom-quantity"></p>
-                            <p class="bathroom-quantity"></p>
-                            <p class="size"></p>
+                            <div class="listing-details">
+                                <p class="price"></p>
+                                <p class="size"></p>
+                                <p class="bedroom-quantity"></p>
+                                <p class="bathroom-quantity"></p>
+                            </div>
+                            
+                            
+                            
                         </div>
                     </div>
 
@@ -165,35 +170,55 @@
                 <a href="">&rarr;</a>
               </div> 
         <div>
-            
+ </div>
 
-            <h1 id="resources-title" class="title">Resources</h1>
-<p>
-    <h3>Handouts</h3>
-    <h4><a href="https://bestfriends.org/sites/default/files/2023-07/234067-PetInclusiveMaterials-OnePager-dp.pdf">Tenant's Talking Points List (Best Friends Animal Society)(pdf link)</a></h4>
-    <h4><a href="https://www.petsandhousing.org/wp-content/uploads/2024/03/PIHI-Myth-Busting-Statistics-to-Share-with-Your-Property-Owner-or-Manager.pdf">Mythbusting Property Statistics to Share With Your Property Owner (petsandhousing.org)(pdf link)</a></h4>
-    <h4><a href="https://www.petsandhousing.org/wp-content/uploads/2024/03/Renters-Insurance.pdf">Renters Insurance Leads - With No Size Restrictions (petsandhousing.org)(pdf link)</a><h4>
-</p>
-<br>
-<p>
-    <h3>Templates</h3>
-    <h4><a href="https://www.apartmentguide.com/blog/pet-resume/">Create Your Pet Resume: A printable fill-in pet resume generator (apartmentguide.com)</a></h4>
-</p>
-<br>
-<p>
-    <h3>Guides</h3>
-    <h4><a href="https://bestfriends.org/pet-care-resources/pet-friendly-rentals-guide-finding-housing">Best Friends Animal Society's Housing Guide</a></h4>
-    <h4><a href="https://www.humanesociety.org/resources/information-renters-pets">Humane Society's Housing Guide</a></h4>
-    <h4><a href="https://www.peta.org/living/animal-companions/online-resources-finding-animal-friendly-housing/">Peta's Housing Guide</a></h4>
-    <h4><a href="https://www.petsandhousing.org/pet-owners/">Michelson Found Animals' Housing Guide</a></h4>
-</p>
+<div class="wave-header">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#ffd700" fill-opacity="1" 
+        d="M0,128L60,144C120,160,240,192,360,197.3C480,203,600,181,720,149.3C840,117,960,75,1080,58.7C1200,
+        43,1320,53,1380,58.7L1440,64L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,
+        320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path></svg>
+</div>
 
-        </div>
-            
+<div class="two-column-container">
+    <div id="resources-title-div">
+       <h1 id="resources-title">Resources</h1>
     </div>
-    <br><br>
-   <p><a href="https://icons8.com/icon/103475/cat-footprint">Cat Foot Print</a> icon by <a href="https://icons8.com">Icons8</a></p>
-   <p><a href="https://icons8.com/icon/59878/search">Magnifying Glass</a> icon by <a href="https://icons8.com">Icons8</a></p>
+    <div class="handout-container">        
+        <p class="handout-link-section">
+            <h3>Handouts</h3>
+            <ul>
+                <li><h4><a href="https://bestfriends.org/sites/default/files/2023-07/234067-PetInclusiveMaterials-OnePager-dp.pdf">Tenant's Talking Points List</a> Best Friends Animal Society</h4></li>
+                <li><h4><a href="https://www.petsandhousing.org/wp-content/uploads/2024/03/PIHI-Myth-Busting-Statistics-to-Share-with-Your-Property-Owner-or-Manager.pdf">Mythbusting Property Statistics to Share With Your Property Owner</a> Petsandhousing.org</h4></li>
+                <li><h4><a href="https://www.petsandhousing.org/wp-content/uploads/2024/03/Renters-Insurance.pdf">Renters Insurance Leads - With No Size Restrictions</a> Petsandhousing.org<h4></li>
+            </ul>
+        </p>
+        <br>
+        <p class="handout-link-section">
+            <h3>Templates</h3>
+            <ul>
+                <li><h4><a href="https://www.apartmentguide.com/blog/pet-resume/">Create Your Pet Resume: A printable fill-in pet resume generator</a> Apartmentguide.com</h4></li>
+            </ul>
+        </p>
+        <br>
+        <p class="handout-link-section">
+            <h3>Guides</h3>
+            <ul>
+                <li><h4><a href="https://bestfriends.org/pet-care-resources/pet-friendly-rentals-guide-finding-housing">Best Friends Animal Society's Housing Guide</a></h4></li>
+                <li><h4><a href="https://www.humanesociety.org/resources/information-renters-pets">Humane Society's Housing Guide</a></h4></li>
+                <li><h4><a href="https://www.peta.org/living/animal-companions/online-resources-finding-animal-friendly-housing/">Peta's Housing Guide</a></h4></li>
+                <li><h4><a href="https://www.petsandhousing.org/pet-owners/">Michelson Found Animals' Housing Guide</a></h4></li>
+            </ul>        
+        </p>
+
+    </div>
+            
+</div>
+<br><br>
+</div> 
+
+<p><a href="https://icons8.com/icon/103475/cat-footprint">Cat Foot Print</a> icon by <a href="https://icons8.com">Icons8</a></p>
+<p><a href="https://icons8.com/icon/59878/search">Magnifying Glass</a> icon by <a href="https://icons8.com">Icons8</a></p>
+
 </body>
 
 </html>
