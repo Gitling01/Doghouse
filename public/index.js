@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function(){
         listingForm.reset();
         });
     } 
-
 })
 
 ////end of event listener////
@@ -139,6 +138,7 @@ async function loginUser(data){
     const { username, password } = data;
     await fetch('http://localhost:3000/users/login', {
         method: "POST",
+        credentials: 'include', //new, after commit
         headers: {
             "Content-Type": "application/json"
         },
