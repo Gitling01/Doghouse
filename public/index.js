@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', function(){
     getListingData();
 
+    if(window.location.pathname.endsWith('listing-details.html')){
+        setUpListingDetailsPage();
+    }
+
 //login-register forms
     const registerLink = document.getElementById('register-link');
     const loginLink = document.getElementById('login-link');
@@ -51,13 +55,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
 ////end of event listener////
 
-
-//TODO: can modify it to get city and zipcode too  
 async function getListingData(){
     await fetch('http://localhost:3000/listings')
     .then(response => response.json())
     .then(data => {
         data.forEach((item, index) => { 
+            const listingElements = document.getElementsByClassName('listing');
             const streetAddressElements = document.getElementsByClassName('street-address');
             const priceElements = document.getElementsByClassName('price');
             const numBedroomsElements = document.getElementsByClassName('bedroom-quantity');
@@ -65,6 +68,12 @@ async function getListingData(){
             const sizeElements = document.getElementsByClassName('size');
            // const photoUrlElements = document.getElementsByClassName('property-image');
             if(index < streetAddressElements.length){
+               listingElements[index].setAttribute('data-id',item.listing_id);
+               console.log("listing_id is: " + item.listing_id);
+               listingElements[index].addEventListener('click', () => {
+                   localStorage.setItem('selectedListingId',item.listing_id);
+                   window.location.href="listing-details.html";
+                }); 
                 streetAddressElements[index].textContent = item.street_address;
                 priceElements[index].textContent = "$" + item.price;
                 numBedroomsElements[index].textContent = "Beds: " + item.bedroom_quantity;
@@ -77,6 +86,37 @@ async function getListingData(){
     })   
     .catch(error => console.error(error)); 
 }
+
+async function setUpListingDetailsPage(){
+    const listingId = localStorage.getItem('selectedListingId');
+    console.log(`listing id is: ${listingId}`);
+    if(!listingId){
+        console.error("No listing id found in localStorage");
+        return;
+    }
+    try{
+        const response = await fetch(`http://localhost:3000/listings?listing_id=${listingId}`);
+        if(!response.ok){
+            throw new Error(`Error getting response from fetch request: ${response.status}`);
+        }
+        const listingArray = await response.json();
+        const listing = listingArray[0];
+        console.log(listing);
+        if(!listing){
+            console.error("Listing not found");
+            return;
+        }
+        document.getElementById('listing-details-page-address-title').textContent = listing.street_address;
+        document.getElementById('listing-details-page-price').textContent = `$${listing.price}`;
+        document.getElementById('listing-details-page-bedrooms').textContent = `Beds: ${listing.bedroom_quantity}`;
+        document.getElementById('listing-details-page-bathrooms').textContent = `Baths: ${listing.bathroom_quantity}`;
+        document.getElementById('listing-details-page-size').textContent = `Sq ft: ${listing.size}`;
+        document.getElementById('listing-details-page-image').src = `${listing.photo_url}`
+    } catch(error){
+        console.error("setUpListingDetailsPage: Error getting the listing details", error);
+    }
+}
+
 
 async function createListing(){
     const streetAddress = document.getElementById("street-address").value;
@@ -166,5 +206,6 @@ function toggleForm(loginBody, registerBody){
         loginBody.style.display = 'block';
     }
 }
+
 
 //TODO: Fix images
