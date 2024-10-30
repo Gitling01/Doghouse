@@ -6,9 +6,12 @@ const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcrypt');
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    //origin: 'http://localhost:5501',
+    //credentials: true
+}));
 app.set('trust proxy', 1); //will deploy to heroku soon
-app.use('/static', express.static(path.join(__dirname, 'public')));
+app.use('/static', express.static(path.join(__dirname,'public'))); 
 app.use(session({
     name:'session-name',
     secret: 'kimpossible',
@@ -16,7 +19,8 @@ app.use(session({
     saveUninitialized: false,
     cookie:{
         secure: false, //set true in production
-        maxAge: 1000 * 60 * 5 //5 min
+        maxAge: 1000 * 60 * 5, //5 min
+        //sameSite: 'none' 
     }
 }));
 
@@ -35,14 +39,26 @@ app.get('/listings', async (req,res) => {
     if(!db){
       return res.status(500).json({ error: 'Database connection not made.' });  
     }
-    const query = "SELECT street_address, city, zipcode, price, bedroom_quantity, bathroom_quantity, photo_url, size FROM DoghouseDB.listing";
+    const { listing_id } = req.query;
     try{
-        const [results] = await db.execute(query); 
-        res.json(results); 
+        let query;
+        if(listing_id){
+            query = "SELECT * FROM DoghouseDB.listing WHERE listing_id = ?"
+            const [listing] = await db.execute(query, [listing_id]);
+            if(!listing){
+                return res.status(404).json({ message: "Listing matching that id not found"});
+            }
+            res.json(listing);
+        } else{
+            query = "SELECT * FROM DoghouseDB.listing";
+            const [allListings] = await db.execute(query); 
+            res.json(allListings); 
+        }
     } catch(err) {
+        console.error("Error getting listing/s",error)
         res.status(500).json({ error: err.message });
     }
-})
+});
 
 //POST LISTING
 app.post('/listings', async (req,res) => {
@@ -138,7 +154,7 @@ app.post('/users/login', async (req,res) => {
             //the user is logged in
             req.session.userId = request_username;
             console.log(`Logged in!: ${request_username}`);
-            res.status(201).json({ message: "Logged in successfully!"});
+            res.status(200).json({ message: "Logged in successfully!"});
         } else {
             //deny login
             console.log("Not logged in!");
