@@ -6,3 +6,16 @@ site into the database)
    to the console)(the client side route still needs to be added but login works via Insomnia)
    I still want to check that I am handling errors for all needed cases.
 4- WIP: Stuff related to sessions is currently being added (session.js and server.js are being modified)
+
+10/28/2024:
+1- The session management backend (requiring login upon clicking the listing-form.html link) is working 
+in Insomnia, but the client-side code has a bug (not working as expected when deployed)
+2- Added a simple listing details page UI (everything hard coded so far) just listing-details.html and css  
+3- The GET /listings route in server.js has been modified to take an optional listing_id parameter in the url
+and is fully working in Insomnia. 
+4- I have created a click listener for the listing views and added info about the listing_id into the 
+listing container DOM elements. The click listener has logic that takes the user to the listing-details.html 
+page.
+5- I added a function that renders the listing-details page based on data in localStorage and also 
+put a click listener on the dom content loaded for the listing-details page so the rendering function is 
+called
