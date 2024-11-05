@@ -51,12 +51,31 @@ document.addEventListener('DOMContentLoaded', function(){
         listingForm.reset();
         });
     } 
-})
 
-////end of event listener////
+//TODO: logic for the "add a listing" button
+const addListingButton = document.getElementById("add-listing-button");
+if(addListingButton){
+    addListingButton.addEventListener('click', async () => {
+        console.log("The add listing button was clicked");
+        const loggedIn = await checkAuthentication();
+        if(loggedIn){ 
+            window.location.href = "listing-form.html";
+        } else {
+            window.location.href = "login.html";
+        }
+    });
+} else {
+    console.log("addListingButton element not found");
+}
+  
+}) ////end of main event listener////
+
 
 async function getListingData(){
-    await fetch('http://localhost:3000/listings')
+    await fetch('http://localhost:3000/listings',{
+        method: "GET",
+        headers: {"Content-Type": "application/json"},
+    })
     .then(response => response.json())
     .then(data => {
         data.forEach((item, index) => { 
@@ -69,7 +88,6 @@ async function getListingData(){
            // const photoUrlElements = document.getElementsByClassName('property-image');
             if(index < streetAddressElements.length){
                listingElements[index].setAttribute('data-id',item.listing_id);
-               console.log("listing_id is: " + item.listing_id);
                listingElements[index].addEventListener('click', () => {
                    localStorage.setItem('selectedListingId',item.listing_id);
                    window.location.href="listing-details.html";
@@ -89,7 +107,6 @@ async function getListingData(){
 
 async function setUpListingDetailsPage(){
     const listingId = localStorage.getItem('selectedListingId');
-    console.log(`listing id is: ${listingId}`);
     if(!listingId){
         console.error("No listing id found in localStorage");
         return;
@@ -101,7 +118,6 @@ async function setUpListingDetailsPage(){
         }
         const listingArray = await response.json();
         const listing = listingArray[0];
-        console.log(listing);
         if(!listing){
             console.error("Listing not found");
             return;
@@ -117,6 +133,21 @@ async function setUpListingDetailsPage(){
     }
 }
 
+//TODO: logic to check if a user is logged in already
+async function checkAuthentication(){
+    try{
+        const response = await fetch('http://localhost:3000/protected/add-listing', {
+            method: "GET",
+            headers: {"Content-Type": "application/json"},
+            credentials: 'include'
+        })
+        return response.ok;
+    }catch(error){
+        console.error("checkAuthentication: error checking authentication", error);
+        return false;
+    }
+    
+};
 
 async function createListing(){
     const streetAddress = document.getElementById("street-address").value;
@@ -178,7 +209,7 @@ async function loginUser(data){
     const { username, password } = data;
     await fetch('http://localhost:3000/users/login', {
         method: "POST",
-        credentials: 'include', //new, after commit
+        credentials: 'include',
         headers: {
             "Content-Type": "application/json"
         },
