@@ -89,6 +89,23 @@ app.post('/listings', async (req,res) => {
     }
 });
 
+//DELETE A LISTING (will add user_id info)
+app.delete('/listings', async (req,res) => {
+    if(!db){
+        return res.status(500).json({ error: 'Database connection not made'});
+    }
+    const { listing_id } = req.query;
+    try{
+        const query = "DELETE FROM DoghouseDB.listing WHERE listing_id = ?"; 
+        await db.execute(query, [listing_id]);
+        //can also check if listing with that id exists (could use result.affectedRows > 0)
+        res.status(200).json({ message: "Deletion successful" });
+    }catch(error){
+        console.error("Error trying to delete listing", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 //SESSIONS RELATED
 const isAuthenticated = (req,res,next) => {
     console.log(`isAuthenticated: ${req.session.id}`);
