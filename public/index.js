@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     } 
 
-//TODO: logic for the "add a listing" button
 const addListingButton = document.getElementById("add-listing-button");
 if(addListingButton){
     addListingButton.addEventListener('click', async () => {
@@ -66,6 +65,20 @@ if(addListingButton){
     });
 } else {
     console.log("addListingButton element not found");
+}
+
+const deleteListingButton = document.getElementById('delete-listing-button');
+if(deleteListingButton){
+    deleteListingButton.addEventListener('click', async () => {
+        deleteListing();
+        document.getElementById('listing-details-page-address-title').textContent = "This listing has been deleted";
+        document.getElementById('listing-details-page-price').textContent = "";
+        document.getElementById('listing-details-page-bedrooms').textContent = "";
+        document.getElementById('listing-details-page-bathrooms').textContent = "";
+        document.getElementById('listing-details-page-size').textContent = "";
+        document.getElementById('listing-details-page-image').src = "/images/no-image-available.jpg";
+        document.getElementById('delete-listing-button').style.display = "none";
+    });
 }
   
 }) ////end of main event listener////
@@ -182,7 +195,28 @@ async function createListing(){
     .catch(error => console.error("Error creating listing in createListing function", error))
 }
 
-//TODO: Check ret
+//delete listing TODO: (make button event listener next)
+async function deleteListing(){
+    const listingId = localStorage.getItem('selectedListingId');
+    if(!listingId){
+        console.error("No listing id found in localStorage");
+        return;
+    }
+    const response = await fetch(`http://localhost:3000/listings?listing_id=${listingId}`, {
+            method: "DELETE",
+            headers:{ "Content-Type": "application/json"
+            }
+        })
+    .then(response => {
+        if(!response.ok){
+            throw new Error(`Error getting response from fetch request: ${response.status}`);
+        }
+        return response.json();
+    })
+    .catch(error => console.error("deleteListing(): Error fetching route to delete listing", error))
+}
+
+//TODO: Check return
 async function registerUser(data){
     const { email, username, password } = data;
     await fetch("http://localhost:3000/users", {
