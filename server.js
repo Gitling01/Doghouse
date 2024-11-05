@@ -5,22 +5,25 @@ const app = express();
 const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcrypt');
-app.use(express.json());
 app.use(cors({
-    //origin: 'http://localhost:5501',
-    //credentials: true
+   origin: 'http://127.0.0.1:5501',
+   credentials: true,
+   //methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
+   //allowedHeaders: ['Content-Type', 'Authorization']  
 }));
+//app.options('*', cors());
+app.use(express.json());
 app.set('trust proxy', 1); //will deploy to heroku soon
 app.use('/static', express.static(path.join(__dirname,'public'))); 
 app.use(session({
-    name:'session-name',
     secret: 'kimpossible',
     resave: false,
     saveUninitialized: false,
     cookie:{
-        secure: false, //set true in production
+        secure: true, //set true in production since now i'm on http
         maxAge: 1000 * 60 * 5, //5 min
-        //sameSite: 'none' 
+        httpOnly: true,
+        sameSite: 'none' //mdn docs says if this is none, then secure must be true?
     }
 }));
 
