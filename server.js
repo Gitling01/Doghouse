@@ -1,3 +1,14 @@
+//HTTPS SETTINGS SECTION (can comment out if you want http)
+//***************************************************
+const https = require('https');
+const fs = require('fs');
+const certPathName = "";
+const keyPathName = "";
+const options = {
+    key: fs.readFileSync(keyPathName), //path to 'localhost-key.pem'
+    cert: fs.readFileSync(certPathName) //path to 'localhost.pem'
+};
+//*************************************************** 
 const connection = require('./db.js');
 const express = require('express');
 const session = require('express-session');
@@ -6,26 +17,33 @@ const cors = require('cors');
 const path = require('path');
 const bcrypt = require('bcrypt');
 app.use(cors({
-   origin: 'http://127.0.0.1:5501',
+   origin: 'http://localhost:3000',
    credentials: true,
-   //methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
-   //allowedHeaders: ['Content-Type', 'Authorization']  
+   methods: ['*'],
+   allowedHeaders: ['*']
 }));
-//app.options('*', cors());
 app.use(express.json());
-app.set('trust proxy', 1); //will deploy to heroku soon
-app.use('/static', express.static(path.join(__dirname,'public'))); 
+//app.set('trust proxy', 1); //will deploy to heroku later
+app.use(express.static(path.join(__dirname,'public'))); 
 app.use(session({
     secret: 'kimpossible',
     resave: false,
     saveUninitialized: false,
     cookie:{
-        secure: true, //set true in production since now i'm on http
+        secure: true, //set true in production (or when using https)
         maxAge: 1000 * 60 * 5, //5 min
-        httpOnly: true,
-        sameSite: 'none' //mdn docs says if this is none, then secure must be true?
+        httpOnly: true, //avoids xss (ok for https too)
+        sameSite: 'none' //mdn docs says if this is none, then secure must be true
     }
 }));
+
+app.get('/index.html', function (req, res) {
+    var options = {
+      root: path.join(__dirname, 'public'),
+    }
+
+    res.sendFile(index.html, options); //could add error handling like express doc
+    });
 
 const port = process.env.PORT || 3000;
 
@@ -104,6 +122,27 @@ app.delete('/listings', async (req,res) => {
         console.error("Error trying to delete listing", error);
         res.status(500).json({ error: error.message });
     }
+});
+
+//WIP: Currently working on this function: search by rental type or city (for the search bar) maybe more
+app.get('/listings', async (req,res) => {
+    if(!db){
+        console.error("Error connecting to the database");
+        return res.status(500).json({ message: "Could not connect to the database" });
+    }
+    try{
+        const { rental_type }  = req.query;
+        const query = "SELECT * FROM DoghouseDb.listing WHERE rental_type = ?"
+        const [listings] = await db.execute(query, [rental_type]);
+        if(!response.ok){
+            console.error("Could not execute the query");
+        }
+        res.json(listings);
+    } catch(error){
+        console.error("/listings: error getting search item", error);
+        res.status(500).json({ message: "Error getting the search item" });
+    }
+    
 });
 
 //SESSIONS RELATED
@@ -198,7 +237,13 @@ app.post('/logout',(req,res) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`App listening on port ${port}`)
-})
+//app.listen(port, () => {
+ //   console.log(`App listening on port ${port}`)
+//})
 
+//MORE HTTPS SETUP: uncomment out the app.listen code directly above to use http instead
+https.createServer(options, app).listen(port, () => {
+  console.log('HTTPS server running on https://localhost:3000');
+});
+
+//********************************************************************************** 
