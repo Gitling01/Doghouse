@@ -85,7 +85,7 @@ if(deleteListingButton){
 
 
 async function getListingData(){
-    await fetch('http://localhost:3000/listings',{
+    await fetch('/listings',{
         method: "GET",
         headers: {"Content-Type": "application/json"},
     })
@@ -125,7 +125,7 @@ async function setUpListingDetailsPage(){
         return;
     }
     try{
-        const response = await fetch(`http://localhost:3000/listings?listing_id=${listingId}`);
+        const response = await fetch(`/listings?listing_id=${listingId}`);
         if(!response.ok){
             throw new Error(`Error getting response from fetch request: ${response.status}`);
         }
@@ -149,7 +149,7 @@ async function setUpListingDetailsPage(){
 //TODO: logic to check if a user is logged in already
 async function checkAuthentication(){
     try{
-        const response = await fetch('http://localhost:3000/protected/add-listing', {
+        const response = await fetch('/protected/add-listing', {
             method: "GET",
             headers: {"Content-Type": "application/json"},
             credentials: 'include'
@@ -173,7 +173,7 @@ async function createListing(){
     const size = parseInt(document.getElementById("size").value);
     console.log("In createListing: " + streetAddress + " " + city + " " + zipcode + " " + price + " " +
          numberOfBedrooms + " " + numberOfBathrooms + " " + size + " " + photoUrl);
-    await fetch("http://localhost:3000/listings", {
+    await fetch("/listings", {
         method: "POST", 
         headers: {
             "Content-Type": "application/json"
@@ -202,7 +202,7 @@ async function deleteListing(){
         console.error("No listing id found in localStorage");
         return;
     }
-    const response = await fetch(`http://localhost:3000/listings?listing_id=${listingId}`, {
+    const response = await fetch(`/listings?listing_id=${listingId}`, {
             method: "DELETE",
             headers:{ "Content-Type": "application/json"
             }
@@ -219,7 +219,7 @@ async function deleteListing(){
 //TODO: Check return
 async function registerUser(data){
     const { email, username, password } = data;
-    await fetch("http://localhost:3000/users", {
+    await fetch("/users", {
         method: "POST", 
         headers: {
             "Content-Type": "application/json"
@@ -241,7 +241,7 @@ async function registerUser(data){
 //login user function
 async function loginUser(data){
     const { username, password } = data;
-    await fetch('http://localhost:3000/users/login', {
+    await fetch('/users/login', {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -253,7 +253,7 @@ async function loginUser(data){
         if(!response.ok){
             throw new Error("Bad response" + response.statusText);
         }
-        window.location.href = '/public/index.html';
+        window.location.href = '/index.html';
         return response.json();
     })
     .then(data => {
