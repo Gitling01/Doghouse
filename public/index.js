@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', function(){
         setUpListingDetailsPage();
     }
 
+    if(window.location.pathname.endsWith('account.html')){
+        setAccountPage();
+    }
+
 //login-register forms
     const registerLink = document.getElementById('register-link');
     const loginLink = document.getElementById('login-link');
@@ -80,11 +84,71 @@ if(deleteListingButton){
         document.getElementById('delete-listing-button').style.display = "none";
     });
 }
+
+const accountPageLink = document.getElementById('account-page-link');
+if(accountPageLink){
+    accountPageLink.addEventListener('click', async (event) => {
+        event.preventDefault();
+        window.location.href = "account.html";
+    });
+}
+
   
 }) ////end of main event listener////
 
+//TODO: add feedback to user that the listing has been deleted
+//Returns user data based on the session info automatically sent with the request (req.session.userId)
+async function setAccountPage(){
+    try{
+        const response = await fetch('protected/users', {
+            method: 'GET',
+            headers: {"Content-Type": "application/json"}
+        })
+        if(response.status === 401){ //would be the response from isAuthenticated saying they're unauthorized
+            window.location.href = "/login.html";
+            return;
+        }
+        if(!response.ok){
+            throw new Error(`Error getting response from fetch request: ${response.status}`);
+        }
+        const userDataArray = await response.json();
+        console.log("Fetched user data:", userDataArray);
+        if(userDataArray.length === 0){
+            throw new error("No user data found");
+        }
 
-async function getListingData(){
+        const { userInfoResults, listingsResults } = userDataArray; 
+        document.getElementById('username-title').textContent = userInfoResults.username;
+        document.getElementById('user-image').src = userInfoResults.photo_url;
+        console.log("username:",userInfoResults.username);
+        console.log("photo_url:",userInfoResults.photo_url);
+        const list = document.getElementById('user-listings-list');
+
+        if(listingsResults && listingsResults.length > 0){
+             for(i=0; i<listingsResults.length; i++){
+             const { listing_id, street_address } = listingsResults[i]; //can use listing_id later for delete button
+             const container = document.createElement("li");
+             container.className = "user-listings-container";
+             const listing = document.createElement("p");
+             listing.textContent = street_address;
+             const deleteListingLink = document.createElement("a");
+             deleteListingLink.textContent = "Delete";
+             container.appendChild(listing);
+             container.appendChild(deleteListingLink);
+             list.appendChild(container); 
+
+             deleteListingLink.addEventListener('click', () => deleteListing(listing_id));
+             };
+        } else {
+            list.innerHTML = "<p>No active listings</p>";
+        }
+        
+    } catch(error){
+        console.error("Error setting up the account page", error);
+    }
+}
+
+async function getListingData(){ 
     await fetch('/listings',{
         method: "GET",
         headers: {"Content-Type": "application/json"},
@@ -162,7 +226,7 @@ async function checkAuthentication(){
     
 };
 
-async function createListing(){
+async function createListing(){ 
     const streetAddress = document.getElementById("street-address").value;
     const city = document.getElementById("city").value;
     const zipcode = document.getElementById("zipcode").value;
@@ -195,11 +259,9 @@ async function createListing(){
     .catch(error => console.error("Error creating listing in createListing function", error))
 }
 
-//delete listing TODO: (make button event listener next)
-async function deleteListing(){
-    const listingId = localStorage.getItem('selectedListingId');
+async function deleteListing(listingId){
     if(!listingId){
-        console.error("No listing id found in localStorage");
+        console.error("No listing id");
         return;
     }
     const response = await fetch(`/listings?listing_id=${listingId}`, {
