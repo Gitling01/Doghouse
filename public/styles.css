@@ -34,8 +34,8 @@ body {
 .main-title{
     display: flex;
     margin: 0 auto;
-    align-items: center; /*"inside" items with respect to each other*/
-    justify-content: center; /*entire inside with respect to container*/
+    align-items: center; /*wrt each other*/
+    justify-content: center; /*wrt container*/
 }
 .search-object{
     display: flex;
@@ -305,3 +305,48 @@ svg{
     padding: 8px;
     border-radius: 5%;
 }
+
+/**Account page**/
+#user-info-container{
+    text-align: center;
+}
+#user-info-container h3{
+    margin: 0px;
+}
+#user-items-container{
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+#user-items-container h4{
+    margin: 0px;
+    padding-left: 38px;
+}
+#user-image{
+    margin-top: 16px;
+    object-fit: cover;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+}
+/*set dynamically in setAccountPage - for user's active listings*/
+.user-listings-list{
+    margin: 0px;
+    padding: 0px;
+}
+.user-listings-container{
+    padding: 0px;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+}
+.user-listings-container p{
+   padding-right: 16px;
+   text-decoration: none;
+}
+.user-listings-container a{
+    text-decoration: underline;
+    padding-right: 16px;
+    cursor: pointer;
+ }
