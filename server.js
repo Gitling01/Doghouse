@@ -2,6 +2,7 @@
 //***************************************************
 const https = require('https');
 const fs = require('fs');
+//require('dotenv').config(); //will add for photo uploading stuff
 const certPathName = "";
 const keyPathName = "";
 const options = {
@@ -11,20 +12,19 @@ const options = {
 //*************************************************** 
 const connection = require('./db.js');
 const express = require('express');
-const session = require('express-session');
-const app = express();
 const cors = require('cors');
+const session = require('express-session');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const app = express();
+app.use(express.json());
 app.use(cors({
    origin: 'http://localhost:3000',
    credentials: true,
    methods: ['*'],
    allowedHeaders: ['*']
 }));
-app.use(express.json());
 //app.set('trust proxy', 1); //will deploy to heroku later
-app.use(express.static(path.join(__dirname,'public'))); 
 app.use(session({
     secret: 'kimpossible',
     resave: false,
@@ -36,7 +36,7 @@ app.use(session({
         sameSite: 'none' //mdn docs says if this is none, then secure must be true
     }
 }));
-
+app.use(express.static(path.join(__dirname,'public'))); 
 app.get('/index.html', function (req, res) {
     var options = {
       root: path.join(__dirname, 'public'),
@@ -149,7 +149,7 @@ app.get('/listings', async (req,res) => {
 const isAuthenticated = (req,res,next) => {
     console.log(`isAuthenticated: ${req.session.id}`);
     console.log(req.session);
-    if(req.session.userId){ //req.session profile or req.session.userId preferred?
+    if(req.session.userId){ 
         console.log("User is logged in");
         return next(); //return
     } else {
@@ -164,20 +164,26 @@ app.get('/protected/add-listing', isAuthenticated, (req,res) => {
     res.status(200).json({message: "from /protected/add-listing: user passed isAuthenticated"});
 });
 
-//LOGIN RELATED ROUTES
-app.get('/users', async (req,res) => { //TODO: REVIEW
+//Get specific user-related data -- if the user is logged in (thus also has a session.userId)
+app.get('/protected/users', isAuthenticated, async (req,res) => {
     if(!db){
         return res.status(500).json({ error: 'Database connection not made.' });  
     }
-      const query = "SELECT username,user_password,email FROM DoghouseDB.user";
+      const userId  = req.session.userId; //session.userId is actually the (unique) username right now
+      const userInfoQuery = "SELECT photo_url, username, user_id FROM DoghouseDB.user WHERE username = ?";
+      const listingsQuery = "SELECT street_address, listing_id FROM DoghouseDB.listing WHERE poster_name = ?"
     try{
-       const [results] = await db.execute(query); 
-       res.json(results); 
+       const [userInfoResults] = await db.execute(userInfoQuery, [userId]); 
+       const [listingsResults] = await db.execute(listingsQuery, [userId]);
+       console.log(userInfoResults);
+       console.log(listingsResults);
+       res.json({ userInfoResults: userInfoResults[0], listingsResults: listingsResults}); 
     } catch(err) {
          res.status(500).json({ error: err.message });
     }
 });
 
+//LOGIN RELATED ROUTES
 app.post('/users', async(req,res) => { //TODO: REVIEW
     if(!db){
         return res.status(500).json({ error: 'Database connection not made.' });  
