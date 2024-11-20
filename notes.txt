@@ -19,3 +19,28 @@ page.
 5- I added a function that renders the listing-details page based on data in localStorage and also 
 put a click listener on the dom content loaded for the listing-details page so the rendering function is 
 called
+
+11/4/2024
+RELATED TO SESSION MANAGEMENT AND AUTHENTICATION:
+*Added credentials: 'include' in index.js functions loginUser and checkAuthentication
+*Modified settings in server.js - cors uses origin: 'http://127.0.0.1:5501' and credentials: true.
+*Modified settings in session in cookies - secure: true, httpOnly: true, sameSite: 'none'.
+Newest browser error: "TypeError: a.default.detectStore(...) is undefined"
+---
+1- Positioned and styled the Add a Listing button (pushed it)
+2- Added the ability to delete a listing (using the Delete button on the listing-details page)(pushed it)
+(3- Added column "rental type" to the database listing table in MySQL Workbench)
+
+11/7/2024
+1- Added https configuration
+
+11/8/2024
+1- WIP: Adding ability to search in search bar by ()rental type, ()city but just as a backend endpoint 
+2- "Protected" route for add-listing is now working and session cookies are displayed in browser (pushed)
+3- WIP: Creating an account page with the user's creating listings shown (need to attach a user id 
+to each listing)
+
+11/19/2024
+1- Account page now shows correct username, photo and listings based on session.userId
+2- Moved delete button to the account page and modified the deleteListing method to take in listingId directly
+3- TODO: add feedback to user that the listing has been deleted
