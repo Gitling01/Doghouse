@@ -44,3 +44,16 @@ to each listing)
 1- Account page now shows correct username, photo and listings based on session.userId
 2- Moved delete button to the account page and modified the deleteListing method to take in listingId directly
 3- TODO: add feedback to user that the listing has been deleted
+
+11/22/2024
+1- Changed login and registration form to have type=password for privacy
+2-  Added star icon to listings 
+3- Created GET route for getting favorites 
+4- Changed session.userId to be the user_id instead of username, and modified functions using session.user_id
+to take that into account
+5- Set up favorites display in setAccountPage
+6- Added ability to add an entry into the favorites table in the db when a user clicks on a listing's star 
+button (and change the pic to filled-star)
+7- Added icons8 link for favorites star
+8- TODO: have the favorite listings be links to that listing's listing details page
+
