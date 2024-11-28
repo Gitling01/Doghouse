@@ -169,9 +169,9 @@ app.get('/protected/users', isAuthenticated, async (req,res) => {
     if(!db){
         return res.status(500).json({ error: 'Database connection not made.' });  
     }
-      const userId  = req.session.userId; //session.userId is actually the (unique) username right now
-      const userInfoQuery = "SELECT photo_url, username, user_id FROM DoghouseDB.user WHERE username = ?";
-      const listingsQuery = "SELECT street_address, listing_id FROM DoghouseDB.listing WHERE poster_name = ?"
+      const userId  = req.session.userId; 
+      const userInfoQuery = "SELECT photo_url, username, user_id FROM DoghouseDB.user WHERE user_id = ?";
+      const listingsQuery = "SELECT street_address, listing_id FROM DoghouseDB.listing WHERE poster_id = ?"
     try{
        const [userInfoResults] = await db.execute(userInfoQuery, [userId]); 
        const [listingsResults] = await db.execute(listingsQuery, [userId]);
@@ -182,6 +182,43 @@ app.get('/protected/users', isAuthenticated, async (req,res) => {
          res.status(500).json({ error: err.message });
     }
 });
+
+//Get specific user-related favorite listings
+app.get('/protected/favorites', isAuthenticated, async(req,res) => {
+    if(!db){
+        return res.status(500).json({ error: 'Database connection not made' });
+    }
+    const userId = req.session.userId;
+    const query = "SELECT f.listing_id, street_address FROM DoghouseDB.favorite f JOIN DoghouseDB.listing l ON l.listing_id = f.listing_id WHERE f.user_id = ?";
+    try{
+        const [listings] = await db.execute(query, [userId]); 
+        res.json(listings);
+    } catch(error){
+        console.error("Error getting favorites from database", error);
+        res.status(500).json({ error: "Error getting favorites from database"});
+    }
+});
+
+//add a listing to favorites
+app.post('/protected/favorites', isAuthenticated, async (req, res) => {
+    if (!db) {
+        return res.status(500).json({ error: 'Database connection not made' });
+    }
+    const userId = req.session.userId; 
+    const { listing_id } = req.body;
+    if (!listing_id) {
+        return res.status(400).json({ error: 'Listing ID is required' });
+    }
+    const query = `INSERT INTO DoghouseDB.favorite (user_id, listing_id) VALUES (?, ?)`;
+    try {
+        await db.execute(query, [userId, listing_id]);
+        res.status(200).json({ message: 'Listing added to favorites' });
+    } catch (error) {
+        console.error("Error adding to favorites:", error);
+        res.status(500).json({ error: "Error adding to favorites" });
+    }
+});
+
 
 //LOGIN RELATED ROUTES
 app.post('/users', async(req,res) => { //TODO: REVIEW
@@ -211,13 +248,16 @@ app.post('/users/login', async (req,res) => {
     try{
         const request_username = req.body.username;
         const request_password = req.body.password;
-        const query = "SELECT user_password FROM DoghouseDB.user WHERE username = ?";
+        const query = "SELECT user_id, user_password FROM DoghouseDB.user WHERE username = ?";
         const [result] = await db.execute(query,[request_username]);
-        console.log(result);
-        const match = await bcrypt.compare(request_password,result[0].user_password);
+        if (result.length === 0) {
+            return res.status(404).json({ message: "User not found!" });
+        }
+        const { user_id, user_password } = result[0];
+        const match = await bcrypt.compare(request_password,user_password);
         if(match){
             //the user is logged in
-            req.session.userId = request_username;
+            req.session.userId = user_id;
             console.log(`Logged in!: ${request_username}`);
             res.status(200).json({ message: "Logged in successfully!"});
         } else {
