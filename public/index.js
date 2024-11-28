@@ -100,19 +100,8 @@ if(accountPageLink){
 //Returns user data based on the session info automatically sent with the request (req.session.userId)
 async function setAccountPage(){
     try{
-        const response = await fetch('protected/users', {
-            method: 'GET',
-            headers: {"Content-Type": "application/json"}
-        })
-        if(response.status === 401){ //would be the response from isAuthenticated saying they're unauthorized
-            window.location.href = "/login.html";
-            return;
-        }
-        if(!response.ok){
-            throw new Error(`Error getting response from fetch request: ${response.status}`);
-        }
-        const userDataArray = await response.json();
-        console.log("Fetched user data:", userDataArray);
+        const generalUrl = 'protected/users';
+        const userDataArray = await fetchData(generalUrl); //for active listings, photo and username
         if(userDataArray.length === 0){
             throw new error("No user data found");
         }
@@ -122,11 +111,11 @@ async function setAccountPage(){
         document.getElementById('user-image').src = userInfoResults.photo_url;
         console.log("username:",userInfoResults.username);
         console.log("photo_url:",userInfoResults.photo_url);
-        const list = document.getElementById('user-listings-list');
+        const activeListingslist = document.getElementById('user-listings-list');
 
         if(listingsResults && listingsResults.length > 0){
              for(i=0; i<listingsResults.length; i++){
-             const { listing_id, street_address } = listingsResults[i]; //can use listing_id later for delete button
+             const { listing_id, street_address } = listingsResults[i];
              const container = document.createElement("li");
              container.className = "user-listings-container";
              const listing = document.createElement("p");
@@ -135,16 +124,58 @@ async function setAccountPage(){
              deleteListingLink.textContent = "Delete";
              container.appendChild(listing);
              container.appendChild(deleteListingLink);
-             list.appendChild(container); 
+             activeListingslist.appendChild(container); 
 
              deleteListingLink.addEventListener('click', () => deleteListing(listing_id));
              };
         } else {
-            list.innerHTML = "<p>No active listings</p>";
+            activeListingslist.innerHTML = "<p>No active listings</p>";
+        }
+        const favoritesUrl = 'protected/favorites';
+        const favoritesResults = await fetchData(favoritesUrl);
+        if(favoritesResults.length === 0){
+            throw new error("No user data found");
+        }
+        const userFavoritesList = document.getElementById("user-favorites-list");
+        if(favoritesResults && favoritesResults.length > 0){
+            for(j=0; j<favoritesResults.length; j++){
+                const { street_address } = favoritesResults[j]; //get listing_id later for remove button
+                console.log(street_address);
+                const favoritesContainer = document.createElement("li");
+                favoritesContainer.className = "user-favorites-container";
+                const favoriteListing = document.createElement("p");
+                favoriteListing.textContent = street_address;
+                favoritesContainer.appendChild(favoriteListing);
+                userFavoritesList.appendChild(favoritesContainer);
+            }
+        }else{
+            userFavoritesList.innerHTML = "<p>No favorites.</p>";
         }
         
     } catch(error){
         console.error("Error setting up the account page", error);
+    }
+
+}
+
+//for use with protected (signed-in) endpoints
+async function fetchData(url) {
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: { "Content-Type": "application/json" }
+        });
+        if (response.status === 401) { //would be the response from isAuthenticated saying they're unauthorized
+            window.location.href = "/login.html";
+            throw new Error("Unauthorized");
+        }
+        if (!response.ok) {
+            throw new Error(`Error fetching data from ${url}: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error(`Error in fetchData for ${url}`, error);
+        throw error;
     }
 }
 
@@ -156,6 +187,7 @@ async function getListingData(){
     .then(response => response.json())
     .then(data => {
         data.forEach((item, index) => { 
+            const favoriteIconElements = document.getElementsByClassName('favorite-icon');
             const listingElements = document.getElementsByClassName('listing');
             const streetAddressElements = document.getElementsByClassName('street-address');
             const priceElements = document.getElementsByClassName('price');
@@ -169,6 +201,11 @@ async function getListingData(){
                    localStorage.setItem('selectedListingId',item.listing_id);
                    window.location.href="listing-details.html";
                 }); 
+                favoriteIconElements[index].addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    favoriteIconElements[index].src = "/images/filled-star-icon.png";
+                    addToFavorites(item.listing_id);
+                });
                 streetAddressElements[index].textContent = item.street_address;
                 priceElements[index].textContent = "$" + item.price;
                 numBedroomsElements[index].textContent = "Beds: " + item.bedroom_quantity;
@@ -180,6 +217,26 @@ async function getListingData(){
         }); 
     })   
     .catch(error => console.error(error)); 
+}
+
+async function addToFavorites(listingId) {
+    try {
+        const response = await fetch('/protected/favorites', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ listing_id: listingId })
+        });
+
+        if (!response.ok && !response.status === 401) { //if they're not logged in, do nothing
+            throw new Error(`Error adding to favorites: ${response.status}`);
+        }
+
+        const result = await response.json();
+    } catch (error) {
+        console.error("Error in addToFavorites:", error);
+    }
 }
 
 async function setUpListingDetailsPage(){
