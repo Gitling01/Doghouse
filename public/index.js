@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function(){
-    getListingData();
+    getListingData(null); //changed
 
     if(window.location.pathname.endsWith('listing-details.html')){
         setUpListingDetailsPage();
@@ -9,6 +9,16 @@ document.addEventListener('DOMContentLoaded', function(){
         setAccountPage();
     }
 
+    const searchButton = document.getElementById('search-button');
+    if(searchButton){
+        searchButton.addEventListener('click', async () => {
+            const searchInput = document.getElementById('search-bar').value;
+            searchListings(searchInput);
+            const startOfListings = document.getElementById('start-of-listings');
+            startOfListings.scrollIntoView({ behavior: 'smooth'});
+        })
+    }
+    
 //login-register forms
     const registerLink = document.getElementById('register-link');
     const loginLink = document.getElementById('login-link');
@@ -96,6 +106,34 @@ if(accountPageLink){
   
 }) ////end of main event listener////
 
+//search by rental type, city, borough or zipcode
+//trim
+//error handling
+//remove case sensitivity in backend route
+async function searchListings(searchTerm) {
+    if (!searchTerm.trim()) {
+        alert('Please enter a search term.');
+        return;
+    }
+    console.log("Search term: ", searchTerm);
+    const params = new URLSearchParams();
+    const boroughs = ['brooklyn', 'manhattan', 'queens', 'bronx', 'staten island'];
+    const rentalTypes = ['apartment', 'room', 'couch'];
+    if (rentalTypes.includes(searchTerm.toLowerCase())){
+        params.append('rental_type', searchTerm);
+    } else if (searchTerm.match(/^\d{5}$/)) { //zipcode
+        params.append('zipcode', searchTerm);
+    } else if (boroughs.includes(searchTerm.toLowerCase())) {
+        params.append('borough', searchTerm);
+    } else {
+        params.append('city', searchTerm);
+    }
+    const url = `/listings?${params.toString()}`; 
+    console.log("url: ", url);
+    getListingData(url);
+}
+
+
 //TODO: add feedback to user that the listing has been deleted
 //Returns user data based on the session info automatically sent with the request (req.session.userId)
 async function setAccountPage(){
@@ -179,13 +217,19 @@ async function fetchData(url) {
     }
 }
 
-async function getListingData(){ 
-    await fetch('/listings',{
-        method: "GET",
-        headers: {"Content-Type": "application/json"},
-    })
-    .then(response => response.json())
-    .then(data => {
+async function getListingData(paramsUrl){ 
+    const url = paramsUrl || '/listings'; 
+    try{
+        const response = await fetch(url,{
+            method: "GET",
+            headers: {"Content-Type": "application/json"},
+        });
+        const data = await response.json();
+        if(!data || data.length === 0){ //modify
+            console.log("No listings found.");
+            hideUnusedListings(0);
+            return;
+        }
         data.forEach((item, index) => { 
             const favoriteIconElements = document.getElementsByClassName('favorite-icon');
             const listingElements = document.getElementsByClassName('listing');
@@ -197,15 +241,14 @@ async function getListingData(){
            // const photoUrlElements = document.getElementsByClassName('property-image');
             if(index < streetAddressElements.length){
                listingElements[index].setAttribute('data-id',item.listing_id);
-               listingElements[index].addEventListener('click', () => {
-                   localStorage.setItem('selectedListingId',item.listing_id);
-                   window.location.href="listing-details.html";
-                }); 
-                favoriteIconElements[index].addEventListener('click', (event) => {
-                    event.stopPropagation();
-                    favoriteIconElements[index].src = "/images/filled-star-icon.png";
-                    addToFavorites(item.listing_id);
-                });
+               listingElements[index].style.display = 'block';
+
+               listingElements[index].removeEventListener('click', handleListingClick); 
+               listingElements[index].addEventListener('click', handleListingClick); 
+
+                favoriteIconElements[index].removeEventListener('click', handleFavoriteClick);
+                favoriteIconElements[index].addEventListener('click', handleFavoriteClick);
+                
                 streetAddressElements[index].textContent = item.street_address;
                 priceElements[index].textContent = "$" + item.price;
                 numBedroomsElements[index].textContent = "Beds: " + item.bedroom_quantity;
@@ -214,9 +257,33 @@ async function getListingData(){
                 //photoUrlElements[index].src = item.photo_url;
                // console.log("item.photo_url");
             }
-        }); 
-    })   
-    .catch(error => console.error(error)); 
+        });   
+        hideUnusedListings(data.length);
+    }   
+    catch(error){
+        console.error("Error fetching listing data: ", error);
+    }
+}
+
+function hideUnusedListings(startIndex){
+    const listingElements = document.getElementsByClassName('listing');
+    for(let i=startIndex; i<listingElements.length; i++){
+        listingElements[i].style.display = 'none';
+    }
+}
+
+function handleListingClick(event){
+    const listingId = event.currentTarget.getAttribute('data-id');
+    localStorage.setItem('selectedListingId',listingId);
+    window.location.href="listing-details.html";
+}
+
+function handleFavoriteClick(event){
+    event.stopPropagation();
+    const favoriteIcon = event.currentTarget;
+    favoriteIcon.src = "/images/filled-star-icon.png";
+    const listingId = favoriteIcon.closest('.listing').getAttribute('data-id');
+    addToFavorites(listingId);
 }
 
 async function addToFavorites(listingId) {
