@@ -2,21 +2,32 @@ body {
     cursor: url('images/icons8-cat-footprint-24.png'), auto;
 }
 /**** LISTING SECTION ****/
-.nav-bar{
+.nav-bar{ 
     display: flex;
     padding: 8px 16px;
 }
 .nav-bar ul{
+    width: auto;
+    /* border: 1px solid black; */
     display: flex;
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
 .nav-bar a{
+    /* border: 1px solid black; */
     display: block;
     color: black;
     padding: 8px;
     float: left;
+    text-decoration: none;
+}
+.nav-bar h2{
+    /* border: 1px solid black; */
+    display: block;
+    color: black;
+    padding-left: 48px;
+    float: right;
     text-decoration: none;
 }
 #add-listing-button{
@@ -31,36 +42,47 @@ body {
     color: #ffffff;
     cursor: pointer;
 }
-.main-title{
+#hero-section{
     display: flex;
-    margin: 0 auto;
-    align-items: center; /*wrt each other*/
-    justify-content: center; /*wrt container*/
+    height: 80vh;
+    width: 100vw;
+    margin: 0px 16px 64px;
+}
+#hero-section-left-content{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: center; 
+}
+#hero-section-left-content h1{
+    font-size: 38px;
+    justify-items: center;
 }
 .search-object{
     display: flex;
     align-items: center;
 }
-.search-bar{
+#search-bar{
     margin-top: 8px;
     margin-left: auto;
     justify-content: center;
-    width: 180px;
-    height: 16px;
+    width: 300px;
+    height: 24px;
 }
-.search-button{
-    border: 1px solid black;
+#search-button{
     margin-top: 8px;
     margin-right: auto;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
 }
-.borough-links{
-    display: flex;
-    flex-direction: column;
-    width: fit-content;
-    padding-left: 10px;
+#hero-section-right-content {
+    flex: 1;
+}
+#hero-section-right-content img{
+    height: 100%;
+    width: auto;
 }
 .row{
     display: flex;
@@ -79,16 +101,21 @@ body {
 }
 .listing-row-container{
     width: 70%;
-    margin: 24px auto; /*equidistant from left and right-- centered*/
+    margin: 24px auto; /*centered*/
     display: flex;
-    justify-content: space-around;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 24px;
 }
 .listing{
+    flex: 0 0 calc(33.3% - 16px);
+    max-width: 0 0 calc(33.3% - 16px);
+    box-sizing: border-box;
     position: relative;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
     border-radius: 2%;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 14px;
+    padding-right: 14px;
     cursor: pointer;
 }
 .favorite-icon{
@@ -126,8 +153,9 @@ body {
 }
 .property-image{
     border-radius: 2%;
-    height: 200px;
-    width: 200px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
 }
 .pagination{
     text-align: center;
