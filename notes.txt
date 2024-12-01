@@ -47,7 +47,7 @@ to each listing)
 
 11/22/2024
 1- Changed login and registration form to have type=password for privacy
-2-  Added star icon to listings 
+2- Added star icon to listings 
 3- Created GET route for getting favorites 
 4- Changed session.userId to be the user_id instead of username, and modified functions using session.user_id
 to take that into account
@@ -57,3 +57,18 @@ button (and change the pic to filled-star)
 7- Added icons8 link for favorites star
 8- TODO: have the favorite listings be links to that listing's listing details page
 
+11/29/2024
+1- Modified GET /listings route to take more parameters
+2- Changed index.html to make the search-button trigger a pointer cursor
+3- Created an on click listener for the search-button which will utilize the input value
+4- Created a searchListings function which uses getListingData, and a helper function called 
+hideUnusedListings
+5- Adjusted CSS so that even single listings render from left to right, and in index.html 
+removed the little corgi icon (for now) 
+
+11/30/2024
+1- Created a hero section
+
+12/1/2024
+1- Fixed duplicate click listener issues with saving favorites
+2- TODO: Make sure stars always reflect db
