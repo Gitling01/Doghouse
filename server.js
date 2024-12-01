@@ -3,8 +3,8 @@
 const https = require('https');
 const fs = require('fs');
 //require('dotenv').config(); //will add for photo uploading stuff
-const certPathName = "";
-const keyPathName = "";
+const certPathName = "C:/Users/Faylo/Desktop/cert files/localhost+2.pem";
+const keyPathName = "C:/Users/Faylo/Desktop/cert files/localhost+2-key.pem";
 const options = {
     key: fs.readFileSync(keyPathName), //path to 'localhost-key.pem'
     cert: fs.readFileSync(certPathName) //path to 'localhost.pem'
@@ -56,30 +56,30 @@ connection().then(connection => {
 });
 
 //GET LISTINGS
-app.get('/listings', async (req,res) => {
-    if(!db){
-      return res.status(500).json({ error: 'Database connection not made.' });  
+/* app.get('/listings', async (req,res) => {
+   if(!db){
+     return res.status(500).json({ error: 'Database connection not made.' });  
     }
     const { listing_id } = req.query;
     try{
-        let query;
-        if(listing_id){
-            query = "SELECT * FROM DoghouseDB.listing WHERE listing_id = ?"
-            const [listing] = await db.execute(query, [listing_id]);
-            if(!listing){
-                return res.status(404).json({ message: "Listing matching that id not found"});
-            }
-            res.json(listing);
-        } else{
-            query = "SELECT * FROM DoghouseDB.listing";
-            const [allListings] = await db.execute(query); 
-            res.json(allListings); 
-        }
-    } catch(err) {
-        console.error("Error getting listing/s",error)
-        res.status(500).json({ error: err.message });
-    }
-});
+       let query;
+       if(listing_id){
+           query = "SELECT * FROM DoghouseDB.listing WHERE listing_id = ?"
+           const [listing] = await db.execute(query, [listing_id]);
+           if(!listing){
+               return res.status(404).json({ message: "Listing matching that id not found"});
+           }
+           res.json(listing);
+       } else{
+           query = "SELECT * FROM DoghouseDB.listing";
+           const [allListings] = await db.execute(query); 
+           res.json(allListings); 
+       }
+   } catch(err) {
+       console.error("Error getting listing/s",error)
+       res.status(500).json({ error: err.message });
+   }
+}); */
 
 //POST LISTING
 app.post('/listings', async (req,res) => {
@@ -124,26 +124,53 @@ app.delete('/listings', async (req,res) => {
     }
 });
 
-//WIP: Currently working on this function: search by rental type or city (for the search bar) maybe more
-app.get('/listings', async (req,res) => {
+//WIP: Search by params (for the search bar and the rental type dropdown)
+app.get('/listings', async (req, res) => {
     if(!db){
-        console.error("Error connecting to the database");
-        return res.status(500).json({ message: "Could not connect to the database" });
+        return res.status(500).json({ error: 'Database connection not made.' });  
     }
-    try{
-        const { rental_type }  = req.query;
-        const query = "SELECT * FROM DoghouseDb.listing WHERE rental_type = ?"
-        const [listings] = await db.execute(query, [rental_type]);
-        if(!response.ok){
-            console.error("Could not execute the query");
-        }
-        res.json(listings);
-    } catch(error){
-        console.error("/listings: error getting search item", error);
-        res.status(500).json({ message: "Error getting the search item" });
-    }
+    const { listing_id, rental_type, street_address, borough, city, zipcode } = req.query;
     
+    let query = 'SELECT * FROM DoghouseDB.listing WHERE 1=1'; 
+    const params = [];
+
+    if (listing_id) {
+        query += ' AND listing_id = ?';
+        params.push(listing_id);
+    }
+    if (rental_type) {
+        query += ' AND rental_type = ?';
+        params.push(rental_type);
+    }
+    if (street_address) {
+        query += ' AND street_address = ?';
+        params.push(street_address);
+    }
+    if (borough) {
+        query += ' AND borough = ?';
+        params.push(borough);
+    }
+    if (city) {
+        query += ' AND city = ?';
+        params.push(city);
+    }
+    if (zipcode) {
+        query += ' AND zipcode = ?';
+        params.push(zipcode);
+    }
+   
+    try {
+        const [rows] = await db.execute(query, params);
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'No matching listings found.' });
+        }
+        res.json(rows);
+    } catch (error) {
+        console.log("error: ", error)
+        res.status(500).json({ error: 'Database query failed' });
+    }
 });
+
 
 //SESSIONS RELATED
 const isAuthenticated = (req,res,next) => {
@@ -171,7 +198,7 @@ app.get('/protected/users', isAuthenticated, async (req,res) => {
     }
       const userId  = req.session.userId; 
       const userInfoQuery = "SELECT photo_url, username, user_id FROM DoghouseDB.user WHERE user_id = ?";
-      const listingsQuery = "SELECT street_address, listing_id FROM DoghouseDB.listing WHERE poster_id = ?"
+      const listingsQuery = "SELECT street_address, listing_id FROM DoghouseDB.listing WHERE user_id = ?"
     try{
        const [userInfoResults] = await db.execute(userInfoQuery, [userId]); 
        const [listingsResults] = await db.execute(listingsQuery, [userId]);
