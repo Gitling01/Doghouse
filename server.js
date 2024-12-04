@@ -3,8 +3,8 @@
 const https = require('https');
 const fs = require('fs');
 //require('dotenv').config(); //will add for photo uploading stuff
-const certPathName = "C:/Users/Faylo/Desktop/cert files/localhost+2.pem";
-const keyPathName = "C:/Users/Faylo/Desktop/cert files/localhost+2-key.pem";
+const certPathName = "";
+const keyPathName = "";
 const options = {
     key: fs.readFileSync(keyPathName), //path to 'localhost-key.pem'
     cert: fs.readFileSync(certPathName) //path to 'localhost.pem'
@@ -33,7 +33,7 @@ app.use(session({
         secure: true, //set true in production (or when using https)
         maxAge: 1000 * 60 * 5, //5 min
         httpOnly: true, //avoids xss (ok for https too)
-        sameSite: 'none' //mdn docs says if this is none, then secure must be true
+        sameSite: 'lax' //mdn docs says if this is none, then secure must be true
     }
 }));
 app.use(express.static(path.join(__dirname,'public'))); 
@@ -186,7 +186,7 @@ const isAuthenticated = (req,res,next) => {
 };
 
 //Protected Route for Add a Listing Link
-app.get('/protected/add-listing', isAuthenticated, (req,res) => {
+app.get('/protected/add-listing', isAuthenticated, (req, res) => {
     console.log("isAuthenticated finished and I was called to send a file");
     res.status(200).json({message: "from /protected/add-listing: user passed isAuthenticated"});
 });
@@ -267,7 +267,15 @@ app.post('/users', async(req,res) => { //TODO: REVIEW
     }
 });
 
-//TODO: add error checking as needed
+app.post('/set-return-url', (req, res) => {
+    const { returnTo } = req.body;
+    req.session.returnTo = returnTo;  
+    res.status(200).send();
+});
+
+
+//On login: returns a redirect url to the original intended page, 
+//if there is one (in req.session.returnTo), otherwise it returns the home page url
 app.post('/users/login', async (req,res) => {
     if(!db){
         return res.status(500).json({ error: 'Database connection not made.' });  
@@ -286,11 +294,16 @@ app.post('/users/login', async (req,res) => {
             //the user is logged in
             req.session.userId = user_id;
             console.log(`Logged in!: ${request_username}`);
-            res.status(200).json({ message: "Logged in successfully!"});
+            let redirectUrl = "/index.html";
+            if(req.session.returnTo){
+                redirectUrl = req.session.returnTo;
+                delete req.session.returnTo;
+            }
+            return res.status(200).json({ redirectUrl });
         } else {
             //deny login
             console.log("Not logged in!");
-            res.status(500).json({ message: "Did not log in successfully!"});
+            return res.status(500).json({ message: "Did not log in successfully!"});
         }
     }  catch(error){
         console.error("Error logging in", error);
