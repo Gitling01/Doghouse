@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     if(window.location.pathname.endsWith('account.html')){
-        setAccountPage();
+        setAccountPage(); //setAccountPage uses fetchData 
     }
 
     const searchButton = document.getElementById('search-button');
@@ -74,6 +74,8 @@ if(addListingButton){
         if(loggedIn){ 
             window.location.href = "listing-form.html";
         } else {
+            const targetUrl = '/listing-form.html';
+            await setReturnUrl(targetUrl);
             window.location.href = "login.html";
         }
     });
@@ -102,9 +104,18 @@ if(accountPageLink){
         window.location.href = "account.html";
     });
 }
-
   
 }) ////end of main event listener////
+
+async function setReturnUrl(url) {
+    await fetch('/set-return-url', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ returnTo: url })
+    });
+}
 
 //search by rental type, city, borough or zipcode
 //trim
@@ -139,7 +150,7 @@ async function searchListings(searchTerm) {
 async function setAccountPage(){
     try{
         const generalUrl = 'protected/users';
-        const userDataArray = await fetchData(generalUrl); //for active listings, photo and username
+        const userDataArray = await fetchProtectedData(generalUrl); //for active listings, photo and username
         if(userDataArray.length === 0){
             throw new error("No user data found");
         }
@@ -170,7 +181,7 @@ async function setAccountPage(){
             activeListingslist.innerHTML = "<p>No active listings</p>";
         }
         const favoritesUrl = 'protected/favorites';
-        const favoritesResults = await fetchData(favoritesUrl);
+        const favoritesResults = await fetchProtectedData(favoritesUrl);
         if(favoritesResults.length === 0){
             throw new error("No user data found");
         }
@@ -197,13 +208,15 @@ async function setAccountPage(){
 }
 
 //for use with protected (signed-in) endpoints
-async function fetchData(url) {
+async function fetchProtectedData(url) {
     try {
         const response = await fetch(url, {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
         });
         if (response.status === 401) { //would be the response from isAuthenticated saying they're unauthorized
+            const targetUrl = window.location.pathname; 
+            await setReturnUrl(targetUrl);
             window.location.href = "/login.html";
             throw new Error("Unauthorized");
         }
@@ -212,7 +225,7 @@ async function fetchData(url) {
         }
         return await response.json();
     } catch (error) {
-        console.error(`Error in fetchData for ${url}`, error);
+        console.error(`Error in fetchProtectedData for ${url}`, error);
         throw error;
     }
 }
@@ -425,27 +438,32 @@ async function registerUser(data){
 }
 
 //login user function
-async function loginUser(data){
+async function loginUser(data) {
     const { username, password } = data;
-    await fetch('/users/login', {
-        method: "POST",
-        credentials: 'include',
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({"username": username, "password": password})
-    })
-    .then(response => {
-        if(!response.ok){
-            throw new Error("Bad response" + response.statusText);
+    
+    try {
+        const response = await fetch('/users/login', {
+            method: "POST",
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({"username": username, "password": password})
+        });
+
+        if (!response.ok) {
+            throw new Error("Bad response: " + response.statusText);
         }
-        window.location.href = '/index.html';
-        return response.json();
-    })
-    .then(data => {
-        console.log("From loginUser(): successfully logged in", data);
-    })
-    .catch(error => console.error("From loginUser(): login was unsuccessful", error))
+
+        const responseData = await response.json(); // Await here to resolve the JSON response
+        console.log("From loginUser(): successfully logged in", responseData);
+
+        // Redirect the user to the appropriate URL
+        window.location.href = responseData.redirectUrl;
+
+    } catch (error) {
+        console.error("From loginUser(): login was unsuccessful", error);
+    }
 }
 
 function toggleForm(loginBody, registerBody){
