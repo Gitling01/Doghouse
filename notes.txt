@@ -71,4 +71,8 @@ removed the little corgi icon (for now)
 
 12/1/2024
 1- Fixed duplicate click listener issues with saving favorites
-2- TODO: Make sure stars always reflect db
+2- TODO: Make sure star icons always reflect db
+
+12/3/2024
+1- Improved redirects for better user experience
+2- TO DO: Add password requirements
